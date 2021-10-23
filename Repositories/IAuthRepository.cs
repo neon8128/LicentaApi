@@ -8,8 +8,7 @@ namespace LicentaApi.Repositories
     {
         Task<ServiceResponse<String>> Login(String Username);
 
-        Task<ServiceResponse<String>> Register(UserModel User);
+        Task<ServiceResponse<String>> Register(UserModel User, String Password);
 
-        Task UserExists (String Username);
     }
 }
