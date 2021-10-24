@@ -5,6 +5,7 @@ using LicentaApi.Data;
 using LicentaApi.DTO;
 using LicentaApi.Hashing;
 using LicentaApi.Models;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
@@ -14,15 +15,39 @@ namespace LicentaApi.Repositories
     {
         private  IMongoCollection<UserModel> _users;
         private readonly IMapper _mapper;
+        private readonly IJwtToken _jwtToekn;
 
-        public AuthRepository(IDbContext DataContext,IMapper Mapper)
+        public AuthRepository(IDbContext DataContext,IMapper Mapper, IJwtToken JwtToekn)
         {
             _users = DataContext.GetUserCollection();
             _mapper = Mapper;
+            _jwtToekn = JwtToekn;
         }
-        public Task<ServiceResponse<string>> Login(string Username)
+        public async Task<ServiceResponse<string>> Login(string Username, String Password)
         {
-            throw new System.NotImplementedException();
+             var response = new ServiceResponse<String>();
+  
+           var user = await _users.AsQueryable().FirstOrDefaultAsync(x =>x.Username == Username);
+            var hashingObject = new HashingAlgorithms();
+            
+            if (user == null)
+            {
+                response.Success = false;
+                response.Errors.Add("User not found");
+            }
+            else if (!hashingObject.VerifyHash(Password, user.PasswordHash, user.Salt))
+            {
+                response.Success = false;
+                response.Errors.Add("Wrong Password");
+            }
+            else
+            {
+                response.Data = _jwtToekn.CreateToken(user);
+                response.Success = true;
+                response.Message = "You have successfully loged in!";
+
+            }
+            return response;
         }
 
         public async Task<ServiceResponse<String>> Register(UserModel User, String Password)

@@ -15,6 +15,21 @@ namespace LicentaApi.Controllers
         {
             _auth = Auth;
         }
+
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginDto RequestedUser)
+        {
+             var response = await _auth.Login(RequestedUser.Username, RequestedUser.Password);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            else
+            {
+                return Ok(response);
+            }
+        }
         
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterUserDto RegisterUserDto)

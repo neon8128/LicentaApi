@@ -7,6 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using LicentaApi.Hashing;
 
 namespace LicentaApi
 {
@@ -23,6 +29,7 @@ namespace LicentaApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IAuthRepository,AuthRepository>();
+            services.AddScoped<IJwtToken,JwtToken>();
             services.AddSingleton<IDbContext,DbContext>();
             services.Configure<DbConfig>(Configuration);
             services.AddControllers();
@@ -32,6 +39,19 @@ namespace LicentaApi
             });
             services.AddAutoMapper(typeof(Startup));
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
+
+             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["jwt_secret"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +67,7 @@ namespace LicentaApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
