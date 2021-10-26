@@ -15,13 +15,13 @@ namespace LicentaApi.Repositories
     {
         private  IMongoCollection<UserModel> _users;
         private readonly IMapper _mapper;
-        private readonly IJwtToken _jwtToekn;
+        private readonly IJwtToken _jwtToken;
 
-        public AuthRepository(IDbContext DataContext,IMapper Mapper, IJwtToken JwtToekn)
+        public AuthRepository(IDbContext DataContext,IMapper Mapper, IJwtToken JwtToken)
         {
             _users = DataContext.GetUserCollection();
             _mapper = Mapper;
-            _jwtToekn = JwtToekn;
+            _jwtToken = JwtToken;
         }
         public async Task<ServiceResponse<string>> Login(string Username, String Password)
         {
@@ -42,7 +42,7 @@ namespace LicentaApi.Repositories
             }
             else
             {
-                response.Data = _jwtToekn.CreateToken(user);
+                response.Data = _jwtToken.CreateToken(user);
                 response.Success = true;
                 response.Message = "You have successfully loged in!";
 
