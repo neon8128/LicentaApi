@@ -2,10 +2,8 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using LicentaApi.Data;
-using LicentaApi.DTO;
 using LicentaApi.Hashing;
 using LicentaApi.Models;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
@@ -23,11 +21,11 @@ namespace LicentaApi.Repositories
             _mapper = Mapper;
             _jwtToken = JwtToken;
         }
-        public async Task<ServiceResponse<string>> Login(string Username, String Password)
+        public async Task<ServiceResponse<string>> Login(string Email, String Password)
         {
              var response = new ServiceResponse<String>();
   
-           var user = await _users.AsQueryable().FirstOrDefaultAsync(x =>x.Username == Username);
+           var user = await _users.AsQueryable().FirstOrDefaultAsync(x =>x.Email == Email);
             var hashingObject = new HashingAlgorithms();
             
             if (user == null)
@@ -44,7 +42,7 @@ namespace LicentaApi.Repositories
             {
                 response.Data = _jwtToken.CreateToken(user);
                 response.Success = true;
-                response.Message = "You have successfully loged in!";
+                response.Message = "You have successfully logged in!";
 
             }
             return response;

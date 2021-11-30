@@ -28,30 +28,32 @@ namespace LicentaApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IAuthRepository,AuthRepository>();
-            services.AddScoped<IJwtToken,JwtToken>();
-            services.AddSingleton<IDbContext,DbContext>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IJwtToken, JwtToken>();
+            services.AddSingleton<IDbContext, DbContext>();
             services.Configure<DbConfig>(Configuration);
+            services.AddCors();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LicentaApi", Version = "v1" });
             });
             services.AddAutoMapper(typeof(Startup));
-            services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-             .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["jwt_secret"])),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+           {
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuerSigningKey = true,
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["jwt_secret"])),
+                   ValidateIssuer = false,
+                   ValidateAudience = false
+               };
+           });
+    
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +65,13 @@ namespace LicentaApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LicentaApi v1"));
             }
+              app.UseCors(options => options
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+
+            );
 
             app.UseHttpsRedirection();
 
@@ -75,6 +84,7 @@ namespace LicentaApi
             {
                 endpoints.MapControllers();
             });
+          
         }
     }
 }

@@ -20,7 +20,7 @@ namespace LicentaApi.Hashing
            //Creates Token
         {
             
-            var claims = new List<Claim> //list of claims in which we user username and email
+            var claims = new List<Claim> //list of claims in which we store username, email and role
             {
                 new Claim(ClaimTypes.Name,User.Username),
                 new Claim(ClaimTypes.Email,User.Email),
@@ -37,7 +37,7 @@ namespace LicentaApi.Hashing
                                                                                   //and an expiry date
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddMinutes(20),
                 SigningCredentials = credentials
             };
 

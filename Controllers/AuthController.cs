@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using LicentaApi.DTO;
 using LicentaApi.Models;
 using LicentaApi.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LicentaApi.Controllers
@@ -18,16 +19,20 @@ namespace LicentaApi.Controllers
 
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginDto RequestedUser)
+        public async Task<IActionResult> Login(LoginDto LoginUser)
         {
-             var response = await _auth.Login(RequestedUser.Username, RequestedUser.Password);
+             var response = await _auth.Login(LoginUser.Email, LoginUser.Password);
             if (!response.Success)
             {
                 return BadRequest(response);
             }
             else
             {
-                return Ok(response);
+                Response.Cookies.Append("token",response.Data,new CookieOptions{
+                    HttpOnly = true
+                });
+                 Response.Headers.Append("Access-Control-Allow-Origin",response.Data);
+                return Ok(response);              
             }
         }
         
