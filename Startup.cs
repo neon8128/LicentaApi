@@ -70,6 +70,7 @@ namespace LicentaApi
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
+                .WithExposedHeaders("token")
 
             );
 

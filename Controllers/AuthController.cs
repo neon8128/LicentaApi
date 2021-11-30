@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LicentaApi.Controllers
 {
-     [ApiController]
+    [ApiController]
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
@@ -21,28 +21,29 @@ namespace LicentaApi.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto LoginUser)
         {
-             var response = await _auth.Login(LoginUser.Email, LoginUser.Password);
+            var response = await _auth.Login(LoginUser.Email, LoginUser.Password);
             if (!response.Success)
             {
                 return BadRequest(response);
             }
             else
             {
-                Response.Cookies.Append("token",response.Data,new CookieOptions{
+                Response.Cookies.Append("token", response.Data, new CookieOptions
+                {
                     HttpOnly = true
                 });
-                 Response.Headers.Append("Access-Control-Allow-Origin",response.Data);
-                return Ok(response);              
+                Response.Headers.Append("token", response.Data);
+                return Ok(response);
             }
         }
-        
+
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterUserDto RegisterUserDto)
         {
-           // var validator = new RegisterUserValidator();
+            // var validator = new RegisterUserValidator();
             //var results = validator.Validate(RegisterUserDto);
 
-           
+
             var response = await _auth.Register(
                 new UserModel
                 {
@@ -55,7 +56,7 @@ namespace LicentaApi.Controllers
 
             if ( /*!results.IsValid */ !response.Success)
             {
-               
+
                 return BadRequest(response);
             }
             else
