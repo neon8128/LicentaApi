@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+    using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +15,7 @@ namespace LicentaApi.Controllers
         
         [HttpGet("GetAll")]
         [Authorize]
-        public async Task<IActionResult> GetAll(string Id)
+        public  IActionResult GetAll(string Id)
         {
             var response = "it works!";
             return Ok(response);

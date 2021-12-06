@@ -7,12 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using LicentaApi.Hashing;
+using Microsoft.Net.Http.Headers;
 
 namespace LicentaApi
 {
@@ -28,11 +27,12 @@ namespace LicentaApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtToken, JwtToken>();
             services.AddSingleton<IDbContext, DbContext>();
             services.Configure<DbConfig>(Configuration);
-            services.AddCors();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -49,11 +49,10 @@ namespace LicentaApi
                    ValidateIssuerSigningKey = true,
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["jwt_secret"])),
                    ValidateIssuer = false,
-                   ValidateAudience = false
+                   ValidateAudience = false,
                };
-           });
-    
-            
+           }
+           );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,19 +64,24 @@ namespace LicentaApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LicentaApi v1"));
             }
-              app.UseCors(options => options
-                .WithOrigins("http://localhost:3000")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .WithExposedHeaders("token")
-
-            );
+        
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseAuthentication();
+
+            app.UseCors(options => options
+          .WithOrigins("http://localhost:3000")
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+          .AllowCredentials()
+             .WithHeaders(
+            HeaderNames.Accept,
+            HeaderNames.ContentType,
+            HeaderNames.Authorization)
+
+      );
 
             app.UseAuthorization();
 
@@ -85,7 +89,7 @@ namespace LicentaApi
             {
                 endpoints.MapControllers();
             });
-          
+
         }
     }
 }

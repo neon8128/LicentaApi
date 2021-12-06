@@ -9,17 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace LicentaApi.Hashing
 {
-    public class JwtToken:IJwtToken
+    public class JwtToken : IJwtToken
     {
         private readonly IConfiguration _configuration;
         public JwtToken(IConfiguration Configuration)
         {
             _configuration = Configuration;
         }
-        public String CreateToken(UserModel User)         
-           //Creates Token
+        public String CreateToken(UserModel User)
+        //Creates Token
         {
-            
+
             var claims = new List<Claim> //list of claims in which we store username, email and role
             {
                 new Claim(ClaimTypes.Name,User.Username),
@@ -45,6 +45,30 @@ namespace LicentaApi.Hashing
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public JwtSecurityToken VerifyToken(String Token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                tokenHandler.ValidateToken(Token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["jwt_secret"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                }, out SecurityToken validatedToken);
+
+                return (JwtSecurityToken)validatedToken;
+            }
+            catch(Exception e)
+            {
+                
+            }
+            return null;
+
         }
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+using LicentaApi.Hashing;
+using System.Linq;
+
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,19 +11,23 @@ namespace LicentaApi.Controllers
     [Route("[controller]")]
     public class TokenController : ControllerBase
     {
+       
+
 
         [HttpGet]
         [Route("Get")]
-        public async Task<IActionResult> GetToken()
+        public IActionResult GetToken()
         {
-            var accessToken =  await HttpContext.GetTokenAsync("token");          
+            var accessToken = Request.Cookies["jwt"]; //get token from client
+
             if (!String.IsNullOrEmpty(accessToken))
             {
+               //var verified = _tokenService.VerifyToken(accessToken);  //verify it and return jwt token    
                 return Ok(accessToken);
             }
             else
             {
-              return BadRequest();
+                return BadRequest();
             }
         }
     }

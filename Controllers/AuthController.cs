@@ -28,11 +28,16 @@ namespace LicentaApi.Controllers
             }
             else
             {
-                Response.Cookies.Append("token", response.Data, new CookieOptions
+                this.HttpContext.Response.Cookies.Append("jwt", response.Data, new CookieOptions
                 {
-                    HttpOnly = true
-                });
-                Response.Headers.Append("token", response.Data);
+                    Path = "/",
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    IsEssential = true
+
+                }) ;
+                 Response.Headers.Append("jwt", response.Data);
                 return Ok(response);
             }
         }
