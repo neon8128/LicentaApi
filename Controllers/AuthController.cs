@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using LicentaApi.DTO;
 using LicentaApi.Models;
 using LicentaApi.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +29,7 @@ namespace LicentaApi.Controllers
             }
             else
             {
-                this.HttpContext.Response.Cookies.Append("jwt", response.Data, new CookieOptions
+                HttpContext.Response.Cookies.Append("jwt", response.Data, new CookieOptions
                 {
                     Path = "/",
                     HttpOnly = true,
@@ -37,7 +38,7 @@ namespace LicentaApi.Controllers
                     IsEssential = true
 
                 }) ;
-                 Response.Headers.Append("jwt", response.Data);
+
                 return Ok(response);
             }
         }
@@ -59,7 +60,7 @@ namespace LicentaApi.Controllers
             );
             //var response = await _auth.Register(RegisterUserDto);
 
-            if ( /*!results.IsValid */ !response.Success)
+            if (!response.Success)
             {
 
                 return BadRequest(response);
@@ -68,6 +69,14 @@ namespace LicentaApi.Controllers
             {
                 return Ok(response);
             }
+        }
+
+        [Authorize]
+        [HttpPost("LogOut")]
+        public  IActionResult LogOut()
+        {
+            HttpContext.Response.Cookies.Delete("jwt");
+            return Ok();
         }
     }
 }

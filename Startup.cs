@@ -74,7 +74,8 @@ namespace LicentaApi
             app.UseCors(options => options
           .WithOrigins("http://localhost:3000")
           .AllowAnyHeader()
-          .AllowAnyMethod()
+          .WithMethods("POST", "GET", "OPTIONS")
+          .SetIsOriginAllowedToAllowWildcardSubdomains()
           .AllowCredentials()
              .WithHeaders(
             HeaderNames.Accept,
@@ -82,6 +83,7 @@ namespace LicentaApi
             HeaderNames.Authorization)
 
       );
+            
 
             app.UseAuthorization();
 
