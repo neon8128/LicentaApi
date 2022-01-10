@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using LicentaApi.Hashing;
 using Microsoft.Net.Http.Headers;
+using LicentaApi.Repositories.RestaurantRepository;
 
 namespace LicentaApi
 {
@@ -28,6 +29,7 @@ namespace LicentaApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddScoped<IRestaurantRepository,RestaurantRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtToken, JwtToken>();
             services.AddSingleton<IDbContext, DbContext>();
