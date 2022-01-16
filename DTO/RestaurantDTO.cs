@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 
 namespace LicentaApi.DTO
 {
@@ -6,5 +7,6 @@ namespace LicentaApi.DTO
     {
         public String Name { get; set; }
         public String Address { get; set; }
+        public IFormFile ImageFile{ get; set; }
     }
 }

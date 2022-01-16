@@ -13,6 +13,9 @@ using System.Text;
 using LicentaApi.Hashing;
 using Microsoft.Net.Http.Headers;
 using LicentaApi.Repositories.RestaurantRepository;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace LicentaApi
 {
@@ -29,6 +32,7 @@ namespace LicentaApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IRestaurantRepository,RestaurantRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtToken, JwtToken>();
@@ -85,8 +89,12 @@ namespace LicentaApi
             HeaderNames.Authorization)
 
       );
-            
 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Images")),
+                RequestPath = "/Images"
+            });
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
