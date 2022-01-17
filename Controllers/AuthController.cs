@@ -71,11 +71,15 @@ namespace LicentaApi.Controllers
             }
         }
 
-        [Authorize]
+       
         [HttpPost("LogOut")]
-        public  IActionResult LogOut()
+        public   IActionResult LogOut()
         {
-            HttpContext.Response.Cookies.Delete("jwt");
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie);
+            }
+
             return Ok();
         }
     }

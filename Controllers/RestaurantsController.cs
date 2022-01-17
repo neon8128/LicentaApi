@@ -14,6 +14,7 @@ namespace LicentaApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+   
     public class RestaurantsController: ControllerBase
     {
         private readonly IRestaurantRepository _restaurantRepo;

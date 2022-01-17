@@ -12,6 +12,7 @@ namespace LicentaApi.Models
         public String Id { get; set; }
         public String Name { get; set; }
         public String Address { get; set; }
+        public String UserManager { get; set; }
 
         public String ImageName { get; set; }
         

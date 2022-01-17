@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 
 namespace LicentaApi.Repositories.RestaurantRepository
 {
@@ -16,14 +17,16 @@ namespace LicentaApi.Repositories.RestaurantRepository
     {
         private IMongoCollection<RestaurantModel> _restaurants;
         private readonly IWebHostEnvironment _hostEnvironment;
-       // private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public RestaurantRepository(IDbContext DataContext, IWebHostEnvironment HostEnvironment)
+        public RestaurantRepository(IDbContext DataContext, IWebHostEnvironment HostEnvironment, IHttpContextAccessor HttpContext)
         {
             _restaurants = DataContext.GetRestaurantCollection();
             _hostEnvironment = HostEnvironment;
-            //_httpContextAccessor = HttpContextAccessor;
+            _httpContext = HttpContext;
+
         }
+        private String GetUserName() => _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name);
         public async Task<ServiceResponse<string>> AddResturant(RestaurantModel Restaurant)
         {
             var response = new ServiceResponse<String>();
@@ -34,12 +37,18 @@ namespace LicentaApi.Repositories.RestaurantRepository
                 response.Errors.Add("Restaurant already exists!");
                 return response;
             }
+            if(await IsManagerDuplicate(Restaurant.UserManager))
+            {
+                response.Success = false;
+                response.Errors.Add("Cannot manage more than one restaurant!");
+                return response;
+            }
 
             try
             {
                 Restaurant.ImageName = await SaveImage(Restaurant.ImageFile);
                 Restaurant.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Restaurant.ImageName);
-
+                Restaurant.UserManager = GetUserName();
                 await _restaurants.InsertOneAsync(Restaurant);
                 response.Message = "Restaurant was created!";
                 response.Success = true;
@@ -92,6 +101,9 @@ namespace LicentaApi.Repositories.RestaurantRepository
 
         public async Task<bool> IsRestaurantDuplicate(String Name) => await _restaurants.AsQueryable()
                 .AnyAsync(x => x.Name == Name.ToLower());  // checks for duplicates in the restaurant table 
+
+        public async Task<bool> IsManagerDuplicate(String UserManager) => await _restaurants.AsQueryable()
+                .AnyAsync(x => x.UserManager == UserManager.ToLower());  // checks for dupolicates in manager 
 
         //saves image and return image name
         public async Task<String> SaveImage(IFormFile ImageFile)
