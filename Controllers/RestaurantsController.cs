@@ -1,24 +1,65 @@
-    using System.Threading.Tasks;
+using System;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using LicentaApi.DTO;
+using LicentaApi.Models;
+using LicentaApi.Repositories.RestaurantRepository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LicentaApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+   
     public class RestaurantsController: ControllerBase
     {
-        public RestaurantsController()
+        private readonly IRestaurantRepository _restaurantRepo;
+        private readonly IHttpContextAccessor _httpContext;
+
+        public RestaurantsController(IRestaurantRepository RestaurantRepo, IHttpContextAccessor HttpContext)
         {
-            
+            _restaurantRepo = RestaurantRepo;
+            _httpContext = HttpContext;
         }
         
         [HttpGet("GetAll")]
-        [Authorize]
-        public  IActionResult GetAll(string Id)
+        public async Task<IActionResult> GetAll()
         {
-            var response = "it works!";
+           return Ok( await _restaurantRepo.GetAll());
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateRestaurant([FromForm]RestaurantDTO Restaurant)
+        {
+            var temp = new RestaurantModel
+            {
+                Name = Restaurant.Name,
+                Address = Restaurant.Address,
+                ImageFile = Restaurant.ImageFile
+            };
+     
+           var response = await _restaurantRepo.AddResturant(temp);
+                
+            if (!response.Success)
+            {
+               return BadRequest(response);
+            }
             return Ok(response);
         }
+
+        //[DisableCors]
+        [HttpGet("GetByUser")]
+        [Authorize]
+        public async Task<IActionResult> GetByUser()
+        {
+            var user= _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+            return Ok(await _restaurantRepo.GetByUserName());
+        }
+
     }
 }

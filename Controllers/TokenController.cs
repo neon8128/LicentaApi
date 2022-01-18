@@ -5,6 +5,7 @@ using System.Linq;
 
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LicentaApi.Controllers
 {
@@ -22,6 +23,7 @@ namespace LicentaApi.Controllers
 
         [HttpGet]
         [Route("Get")]
+ 
         public IActionResult GetToken()
         {
             var accessToken = Request.Cookies["jwt"]; //get token from client
