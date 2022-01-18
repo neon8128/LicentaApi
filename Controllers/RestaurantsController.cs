@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using LicentaApi.DTO;
 using LicentaApi.Models;
 using LicentaApi.Repositories.RestaurantRepository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +20,12 @@ namespace LicentaApi.Controllers
     public class RestaurantsController: ControllerBase
     {
         private readonly IRestaurantRepository _restaurantRepo;
-  
+        private readonly IHttpContextAccessor _httpContext;
 
-        public RestaurantsController(IRestaurantRepository RestaurantRepo)
+        public RestaurantsController(IRestaurantRepository RestaurantRepo, IHttpContextAccessor HttpContext)
         {
             _restaurantRepo = RestaurantRepo;
+            _httpContext = HttpContext;
         }
         
         [HttpGet("GetAll")]
@@ -49,7 +52,14 @@ namespace LicentaApi.Controllers
             return Ok(response);
         }
 
+        //[DisableCors]
+        [HttpGet("GetByUser")]
+        [Authorize]
+        public async Task<IActionResult> GetByUser()
+        {
+            var user= _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+            return Ok(await _restaurantRepo.GetByUserName());
+        }
 
-        
     }
 }

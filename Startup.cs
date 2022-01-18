@@ -31,7 +31,13 @@ namespace LicentaApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(opt => opt.AddPolicy("CorsPolicy", c =>
+            {
+                c.WithOrigins("http://localhost:3000")
+                   .AllowAnyHeader()
+                    .AllowCredentials()
+                    .AllowAnyMethod();
+            }));
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IRestaurantRepository,RestaurantRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
@@ -59,7 +65,6 @@ namespace LicentaApi
                };
            }
            );
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,18 +83,22 @@ namespace LicentaApi
             app.UseRouting();
             app.UseAuthentication();
 
-            app.UseCors(options => options
-          .WithOrigins("http://localhost:3000")
-          .AllowAnyHeader()
-          .WithMethods("POST", "GET", "OPTIONS")
-          .SetIsOriginAllowedToAllowWildcardSubdomains()
-          .AllowCredentials()
-             .WithHeaders(
-            HeaderNames.Accept,
-            HeaderNames.ContentType,
-            HeaderNames.Authorization)
+            //      app.UseCors(options => options
+            //    .WithOrigins("http://localhost:3000")
+            //    .AllowAnyHeader()
+            //    //.WithMethods("POST", "GET", "OPTIONS")
+            //    .AllowAnyMethod()
+            //    //  .SetIsOriginAllowedToAllowWildcardSubdomains()
+            //    .AllowCredentials()
 
-      );
+            //// .WithHeaders(
+            ////HeaderNames.Accept,
+            ////HeaderNames.ContentType,
+            ////HeaderNames.Authorization)
+            ////.WithExposedHeaders("Authorization")
+
+            //);
+            app.UseCors("CorsPolicy");
 
             app.UseStaticFiles(new StaticFileOptions
             {

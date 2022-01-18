@@ -73,7 +73,7 @@ namespace LicentaApi.Controllers
 
        
         [HttpPost("LogOut")]
-        public   IActionResult LogOut()
+        public IActionResult LogOut()
         {
             foreach (var cookie in Request.Cookies.Keys)
             {
@@ -82,5 +82,6 @@ namespace LicentaApi.Controllers
 
             return Ok();
         }
+
     }
 }

@@ -94,6 +94,30 @@ namespace LicentaApi.Repositories.RestaurantRepository
             throw new System.NotImplementedException();
         }
 
+        public async Task<ServiceResponse<RestaurantModel>> GetByUserName()
+        {
+            var response = new ServiceResponse<RestaurantModel>();
+            var username = GetUserName();
+            try
+            {
+                var restaurant = await _restaurants.AsQueryable().FirstOrDefaultAsync(x => x.UserManager == username);
+
+                if (restaurant != null)
+                {
+                    response.Data = restaurant;
+                    response.Success = true;
+                }
+                else { response.Success = false; }
+            }
+            catch(Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.ToString();
+            }
+            return response;
+
+        }
+
         public Task<ServiceResponse<string>> UpdateResturant(string Id, RestaurantModel Restaurant)
         {
             throw new System.NotImplementedException();
@@ -117,5 +141,7 @@ namespace LicentaApi.Repositories.RestaurantRepository
             }
             return imageName;
         }
+
+        
     }
 }
