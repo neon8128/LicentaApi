@@ -13,7 +13,7 @@ namespace LicentaApi.Models
         public String Name { get; set; }
         public String Address { get; set; }
         public String UserManager { get; set; }
-
+        public String Description { get; set; }
         public String ImageName { get; set; }
         
         public String ImagePath { get; set; }
