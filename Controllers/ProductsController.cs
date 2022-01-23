@@ -39,6 +39,7 @@ namespace LicentaApi.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(string Id)
         {

@@ -46,14 +46,15 @@ namespace LicentaApi.Repositories.MenuRepository
         {
             throw new System.NotImplementedException();
         }
-
+        
         public async Task<ServiceResponse<List<MenuModel>>> GetAll(string RestaurantId)
         {
             var response = new ServiceResponse<List<MenuModel>>();
             try
             {
-                var items = await _menu.AsQueryable().ToListAsync();
-                if (items != null)
+                var filter = Builders<MenuModel>.Filter.Eq("Restaurant_Id", RestaurantId);
+                var items = await _menu.Find(filter).ToListAsync();
+                if (items.Count >0)
                 {
                     response.Data = items;
                     response.Success = true;
