@@ -48,7 +48,6 @@ namespace LicentaApi.Repositories.RestaurantRepository
             {
                 Restaurant.ImageName = await SaveImage(Restaurant.ImageFile);
                 Restaurant.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Restaurant.ImageName);
-                Restaurant.UserManager = GetUserName();
                 await _restaurants.InsertOneAsync(Restaurant);
                 response.Message = "Restaurant was created!";
                 response.Success = true;
@@ -94,13 +93,20 @@ namespace LicentaApi.Repositories.RestaurantRepository
             throw new System.NotImplementedException();
         }
 
-        public async Task<ServiceResponse<RestaurantModel>> GetByUserName()
+        public async Task<ServiceResponse<RestaurantModel>> GetByUserName(String Name)
         {
             var response = new ServiceResponse<RestaurantModel>();
-            var username = GetUserName();
+            if (String.IsNullOrEmpty(Name))
+            {
+                response.Data=null;
+                response.Success = false;
+                response.Message = "Name is empty!";
+                return response;
+            }
+  
             try
             {
-                var restaurant = await _restaurants.AsQueryable().FirstOrDefaultAsync(x => x.UserManager == username);
+                var restaurant = await _restaurants.AsQueryable().FirstAsync(x => x.UserManager == Name);
 
                 if (restaurant != null)
                 {

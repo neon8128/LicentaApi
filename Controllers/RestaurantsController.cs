@@ -40,7 +40,8 @@ namespace LicentaApi.Controllers
             {
                 Name = Restaurant.Name,
                 Address = Restaurant.Address,
-                ImageFile = Restaurant.ImageFile
+                ImageFile = Restaurant.ImageFile,
+                UserManager = Restaurant.UserManager
             };
      
            var response = await _restaurantRepo.AddResturant(temp);
@@ -52,13 +53,17 @@ namespace LicentaApi.Controllers
             return Ok(response);
         }
 
-        //[DisableCors]
+
         [HttpGet("GetByUser")]
         [Authorize]
-        public async Task<IActionResult> GetByUser()
+        public async Task<IActionResult> GetByUser(String Name)
         {
-            var user= _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name);
-            return Ok(await _restaurantRepo.GetByUserName());
+            var response = await _restaurantRepo.GetByUserName(Name);
+            if(!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
         }
 
     }

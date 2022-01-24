@@ -12,6 +12,6 @@ namespace LicentaApi.Repositories.RestaurantRepository
         Task<ServiceResponse<String>> GetByName(String Name);
         Task<ServiceResponse<String>> AddResturant(RestaurantModel Restaurant);
         Task<ServiceResponse<String>> UpdateResturant(String Id, RestaurantModel Restaurant);
-        Task<ServiceResponse<RestaurantModel>> GetByUserName();
+        Task<ServiceResponse<RestaurantModel>> GetByUserName(String Name);
     }
 }
