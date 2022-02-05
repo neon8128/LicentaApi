@@ -93,7 +93,7 @@ namespace LicentaApi.Repositories.MenuRepository
             {
                 if (Menu.ImageFile != null)
                 {
-                    DeleteImage(Menu.ImageName);
+                    //DeleteImage(Menu.ImageName);
                     Menu.ImageName = await SaveImage(Menu.ImageFile);
                     Menu.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Menu.ImageName);
                 }
