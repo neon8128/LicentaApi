@@ -1,4 +1,5 @@
-﻿using LicentaApi.Models;
+﻿using LicentaApi.DTO.Order;
+using LicentaApi.Models;
 using LicentaApi.Repositories.OrderRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,16 @@ namespace LicentaApi.Controllers
             _repo = Repo;
         }
         [HttpPost("create")]
-        public async Task<IActionResult> Create (OrderModel Order)
+        public async Task<IActionResult> Create (OrderDto Order)
         {
-            var response = await _repo.CreateOrder(Order);
+            var temp = new OrderModel
+            {
+                UserID = Order.UserID,
+                RestaurantId = Order.RestaurantId,
+                Items = Order.Items,
+                Status = Order.Status
+            };
+            var response = await _repo.CreateOrder(temp);
             if (!response.Success)
             {
                 return BadRequest(response);

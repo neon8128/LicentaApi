@@ -76,11 +76,8 @@ namespace LicentaApi.Repositories.MenuRepository
         }
 
 
-        public Task<ServiceResponse<string>> Update(string RestaurantId, MenuModel Menu)
+        public async Task<ServiceResponse<string>> Update(string RestaurantId, MenuModel Menu)
         {
-<<<<<<< Updated upstream
-            throw new System.NotImplementedException();
-=======
             var response = new ServiceResponse<String>();
             try
             {
@@ -109,7 +106,6 @@ namespace LicentaApi.Repositories.MenuRepository
                 response.Message = ex.ToString();
             }
             return response;
->>>>>>> Stashed changes
         }
 
         public async Task<String> SaveImage(IFormFile ImageFile)
