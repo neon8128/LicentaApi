@@ -30,6 +30,7 @@ namespace LicentaApi.Controllers
                 Status = Order.Status,
                 TotalQty = Order.TotalQty,
                 TotalPrice = Order.TotalPrice,
+                Time = DateTime.Now.ToLocalTime().ToString("dd-MM-yyyy h:mm:ss tt"),
             };
             var response = await _repo.CreateOrder(temp);
             if (!response.Success)

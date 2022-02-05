@@ -15,6 +15,7 @@ namespace LicentaApi.Models
         public List<ProductOrderDto> Items { get; set; }
         public double TotalPrice { get; set; }
         public Int32 TotalQty { get; set; }
+        public String Time { get; set; }
         public String Status { get; set; } = "Not accepted yet";
     }
 }
