@@ -3,6 +3,7 @@ using LicentaApi.Models;
 using LicentaApi.Repositories.OrderRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace LicentaApi.Controllers
@@ -23,12 +24,25 @@ namespace LicentaApi.Controllers
         {
             var temp = new OrderModel
             {
-                UserID = Order.UserID,
+                Email = Order.Email,
                 RestaurantId = Order.RestaurantId,
                 Items = Order.Items,
-                Status = Order.Status
+                Status = Order.Status,
+                TotalQty = Order.TotalQty,
+                TotalPrice = Order.TotalPrice,
             };
             var response = await _repo.CreateOrder(temp);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet("restaurant")]
+        public async Task<IActionResult> GetByRestaurant (String RestaurantId)
+        {
+            var response = await _repo.GetAllByRestaurant(RestaurantId);
             if (!response.Success)
             {
                 return BadRequest(response);

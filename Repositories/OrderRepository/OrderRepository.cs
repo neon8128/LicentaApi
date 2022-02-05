@@ -61,7 +61,7 @@ namespace LicentaApi.Repositories.OrderRepository
             return response;
         }
 
-        public Task<ServiceResponse<List<OrderModel>>> GetAllByUser(string UserId)
+        public Task<ServiceResponse<List<OrderModel>>> GetAllByUser(string Email)
         {
             throw new System.NotImplementedException();
         }
