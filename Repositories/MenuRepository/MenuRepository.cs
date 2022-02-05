@@ -42,9 +42,19 @@ namespace LicentaApi.Repositories.MenuRepository
             return response;
         }
 
-        public Task<ServiceResponse<string>> Delete(string RestaurantId)
+        public async Task<ServiceResponse<string>> Delete(string ItemId)
         {
-            throw new System.NotImplementedException();
+            var response = new ServiceResponse<String>();
+            try
+            {
+                await _menu.DeleteOneAsync(x =>x.Id == ItemId);
+            }
+            catch (Exception e)
+            {
+                response.Success = false;
+                response.Data = e.ToString();
+            }
+            return response;
         }
         
         public async Task<ServiceResponse<List<MenuModel>>> GetAll(string RestaurantId)
@@ -54,7 +64,7 @@ namespace LicentaApi.Repositories.MenuRepository
             {
                 var filter = Builders<MenuModel>.Filter.Eq("Restaurant_Id", RestaurantId);
                 var items = await _menu.Find(filter).ToListAsync();
-                if (items.Any())
+                if (items.Count >0)
                 {
                     response.Data = items;
                     response.Success = true;
@@ -76,14 +86,14 @@ namespace LicentaApi.Repositories.MenuRepository
         }
 
 
-        public async Task<ServiceResponse<string>> Update(string RestaurantId, MenuModel Menu)
+        public async Task<ServiceResponse<string>> Update(string ProductId, MenuModel Menu)
         {
             var response = new ServiceResponse<String>();
             try
             {
                 if (Menu.ImageFile != null)
                 {
-                 //   DeleteImage(Menu.ImageName);
+                    DeleteImage(Menu.ImageName);
                     Menu.ImageName = await SaveImage(Menu.ImageFile);
                     Menu.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Menu.ImageName);
                 }
@@ -118,6 +128,12 @@ namespace LicentaApi.Repositories.MenuRepository
                 await ImageFile.CopyToAsync(fileStream);
             }
             return imageName;
+        }
+        public void DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
         }
     }
 }
