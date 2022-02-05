@@ -8,6 +8,7 @@ namespace LicentaApi.Data
         IMongoCollection<UserModel> GetUserCollection();
         IMongoCollection<RestaurantModel> GetRestaurantCollection();
         IMongoCollection<MenuModel> GetMenuCollection();
+        IMongoCollection<OrderModel> GetOrderCollection();
 
     }
 }

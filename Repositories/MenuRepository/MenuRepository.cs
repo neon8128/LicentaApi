@@ -54,7 +54,7 @@ namespace LicentaApi.Repositories.MenuRepository
             {
                 var filter = Builders<MenuModel>.Filter.Eq("Restaurant_Id", RestaurantId);
                 var items = await _menu.Find(filter).ToListAsync();
-                if (items.Count >0)
+                if (items.Any())
                 {
                     response.Data = items;
                     response.Success = true;
@@ -78,7 +78,38 @@ namespace LicentaApi.Repositories.MenuRepository
 
         public Task<ServiceResponse<string>> Update(string RestaurantId, MenuModel Menu)
         {
+<<<<<<< Updated upstream
             throw new System.NotImplementedException();
+=======
+            var response = new ServiceResponse<String>();
+            try
+            {
+                if (Menu.ImageFile != null)
+                {
+                 //   DeleteImage(Menu.ImageName);
+                    Menu.ImageName = await SaveImage(Menu.ImageFile);
+                    Menu.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Menu.ImageName);
+                }
+
+                var temp =  await _menu.ReplaceOneAsync(x=>x.Id == Menu.Id, Menu);
+                if(temp != null)
+                {
+                    response.Success = true;
+                    response.Message = "updated";
+                }
+                else
+                {
+                    response.Success = false;
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.ToString();
+            }
+            return response;
+>>>>>>> Stashed changes
         }
 
         public async Task<String> SaveImage(IFormFile ImageFile)
