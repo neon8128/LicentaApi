@@ -42,9 +42,19 @@ namespace LicentaApi.Repositories.MenuRepository
             return response;
         }
 
-        public Task<ServiceResponse<string>> Delete(string RestaurantId)
+        public async Task<ServiceResponse<string>> Delete(string ItemId)
         {
-            throw new System.NotImplementedException();
+            var response = new ServiceResponse<String>();
+            try
+            {
+                await _menu.DeleteOneAsync(x =>x.Id == ItemId);
+            }
+            catch (Exception e)
+            {
+                response.Success = false;
+                response.Data = e.ToString();
+            }
+            return response;
         }
         
         public async Task<ServiceResponse<List<MenuModel>>> GetAll(string RestaurantId)
@@ -76,9 +86,36 @@ namespace LicentaApi.Repositories.MenuRepository
         }
 
 
-        public Task<ServiceResponse<string>> Update(string RestaurantId, MenuModel Menu)
+        public async Task<ServiceResponse<string>> Update(string ProductId, MenuModel Menu)
         {
-            throw new System.NotImplementedException();
+            var response = new ServiceResponse<String>();
+            try
+            {
+                if (Menu.ImageFile != null)
+                {
+                    DeleteImage(Menu.ImageName);
+                    Menu.ImageName = await SaveImage(Menu.ImageFile);
+                    Menu.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Menu.ImageName);
+                }
+
+                var temp =  await _menu.ReplaceOneAsync(x=>x.Id == Menu.Id, Menu);
+                if(temp != null)
+                {
+                    response.Success = true;
+                    response.Message = "updated";
+                }
+                else
+                {
+                    response.Success = false;
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.ToString();
+            }
+            return response;
         }
 
         public async Task<String> SaveImage(IFormFile ImageFile)
@@ -91,6 +128,12 @@ namespace LicentaApi.Repositories.MenuRepository
                 await ImageFile.CopyToAsync(fileStream);
             }
             return imageName;
+        }
+        public void DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
         }
     }
 }
