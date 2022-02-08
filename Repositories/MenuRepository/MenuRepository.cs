@@ -63,8 +63,8 @@ namespace LicentaApi.Repositories.MenuRepository
             try
             {
                 var filter = Builders<MenuModel>.Filter.Eq("Restaurant_Id", RestaurantId);
-                var items = await _menu.Find(filter).ToListAsync();
-                if (items.Count >0)
+                var items = await _menu.Find(x => x.Restaurant_Id == RestaurantId).ToListAsync();
+                if (items.Any())
                 {
                     response.Data = items;
                     response.Success = true;

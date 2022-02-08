@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using LicentaApi.Repositories.MenuRepository;
+using LicentaApi.Repositories.OrderRepository;
 
 namespace LicentaApi
 {
@@ -41,6 +42,7 @@ namespace LicentaApi
             }));
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IRestaurantRepository,RestaurantRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IJwtToken, JwtToken>();
