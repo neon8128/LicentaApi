@@ -3,8 +3,9 @@ using LicentaApi.Models;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using MongoDB.Driver.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace LicentaApi.Repositories.OrderRepository
 {
@@ -41,7 +42,7 @@ namespace LicentaApi.Repositories.OrderRepository
             {
 
                 var filter = Builders<OrderModel>.Filter.Eq("Restaurant_Id", RestaurantId);
-                var items = await _order.Find(filter).ToListAsync();
+                var items = await _order.Find(x => x.RestaurantId == RestaurantId).ToListAsync();
                 if (items.Any())
                 {
                     response.Data = items;
@@ -66,9 +67,23 @@ namespace LicentaApi.Repositories.OrderRepository
             throw new System.NotImplementedException();
         }
 
-        public Task<ServiceResponse<List<OrderModel>>> GetOrderById(string OrderId)
+        public async Task<ServiceResponse<OrderModel>> GetOrderById(string OrderId)
         {
-            throw new System.NotImplementedException();
+            var response = new ServiceResponse<OrderModel>();
+
+            var user = await _order.AsQueryable().FirstOrDefaultAsync(a=> a.Id == OrderId);
+            if(user != null)
+            {
+                response.Data = user;
+                response.Success = true;
+            }
+            else
+            {
+                response.Success= false;
+                response.Data = null;
+            }
+
+            return response;
         }
 
         public Task<ServiceResponse<OrderModel>> UpdateOrder(OrderModel Model)
