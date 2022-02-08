@@ -62,9 +62,31 @@ namespace LicentaApi.Repositories.OrderRepository
             return response;
         }
 
-        public Task<ServiceResponse<List<OrderModel>>> GetAllByUser(string Email)
+        public async Task<ServiceResponse<List<OrderModel>>> GetAllByUser(string Email)
         {
-            throw new System.NotImplementedException();
+            var response = new ServiceResponse<List<OrderModel>>();
+            try
+            {
+
+                var filter = Builders<OrderModel>.Filter.Eq("Restaurant_Id", Email);
+                var items = await _order.Find(x => x.Email == Email).ToListAsync();
+                if (items.Any())
+                {
+                    response.Data = items;
+                    response.Success = true;
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "There are no items!";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Success = false;
+                response.Message = e.ToString();
+            }
+            return response;
         }
 
         public async Task<ServiceResponse<OrderModel>> GetOrderById(string OrderId)

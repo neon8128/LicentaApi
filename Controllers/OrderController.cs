@@ -51,10 +51,20 @@ namespace LicentaApi.Controllers
             return Ok(response);
         }
 
-        [HttpGet("order")]
-        public async Task<IActionResult> GetOrder (String OrderId)
+        [HttpGet("GetOrder")]
+        public async Task<IActionResult> GetOrderById (String OrderId)
         {
             var response = await _repo.GetOrderById(OrderId);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("byUser")]
+        public async Task<IActionResult> GetOrderByUser(String Email)
+        {
+            var response = await _repo.GetAllByUser(Email);
             if (!response.Success)
             {
                 return BadRequest(response);
