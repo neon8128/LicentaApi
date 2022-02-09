@@ -6,8 +6,9 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using MongoDB.Driver.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace LicentaApi.Repositories.MenuRepository
 {
@@ -89,6 +90,8 @@ namespace LicentaApi.Repositories.MenuRepository
         public async Task<ServiceResponse<string>> Update(string ProductId, MenuModel Menu)
         {
             var response = new ServiceResponse<String>();
+            ReplaceOneResult replace = null;
+            UpdateResult updateResult = null;
             try
             {
                 if (Menu.ImageFile != null)
@@ -96,10 +99,21 @@ namespace LicentaApi.Repositories.MenuRepository
                     //DeleteImage(Menu.ImageName);
                     Menu.ImageName = await SaveImage(Menu.ImageFile);
                     Menu.ImagePath = String.Format("{0}://{1}{2}/Images/{3}", "https", "localhost:", "44321", Menu.ImageName);
+                    replace =  await _menu.ReplaceOneAsync(x => x.Id == Menu.Id, Menu);
+                }
+                else
+                {
+                    var updateDefinition = Builders<MenuModel>.Update
+                        .Set(a => a.Restaurant_Id, Menu.Restaurant_Id)
+                        .Set(a => a.Item, Menu.Item)
+                        .Set(a => a.Description, Menu.Description)
+                        .Set(a => a.Price, Menu.Price)
+                        .Set(a => a.Categories, Menu.Categories);
+                    updateResult = await _menu.UpdateOneAsync(x => x.Id == Menu.Id,updateDefinition);
                 }
 
-                var temp =  await _menu.ReplaceOneAsync(x=>x.Id == Menu.Id, Menu);
-                if(temp != null)
+                
+                if(replace != null || updateResult!=null)
                 {
                     response.Success = true;
                     response.Message = "updated";
